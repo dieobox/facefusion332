@@ -6,16 +6,22 @@ from facefusion import state_manager
 from facefusion.types import Face, FaceSelectorOrder, Gender, Race, Score
 
 
-def find_match_faces(target_faces : List[Face], reference_faces : List[Face], face_distance : float) -> List[Face]:
-	match_faces : List[Face] = []
+def find_mutant_faces(target_faces : List[Face], temp_faces : List[Face], reference_faces : List[Face], face_distance : float) -> List[Face]:
+	mutant_faces : List[Face] = []
 
-	for reference_face in reference_faces:
-		if reference_face:
-			for index, target_face in enumerate(target_faces):
-				if compare_faces(target_face, reference_face, face_distance):
-					match_faces.append(target_faces[index])
+	if target_faces and temp_faces and reference_faces:
+		target_faces = sort_faces_by_order(target_faces, 'left-right')
+		target_faces = sort_faces_by_order(target_faces, 'top-bottom')
+		temp_faces = sort_faces_by_order(temp_faces, 'left-right')
+		temp_faces = sort_faces_by_order(temp_faces, 'top-bottom')
 
-	return match_faces
+		for reference_face in reference_faces:
+			if reference_face:
+				for index, target_face in enumerate(target_faces):
+					if compare_faces(target_face, reference_face, face_distance):
+						mutant_faces.append(temp_faces[index])
+
+	return mutant_faces
 
 
 def compare_faces(face : Face, reference_face : Face, face_distance : float) -> bool:
